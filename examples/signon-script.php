@@ -18,15 +18,21 @@ declare(strict_types=1);
  *
  * @param string $user User name
  *
- * @return array<int,string>
+ * @return array
  */
-function get_login_credentials(string $user): array
+function get_login_credentials($user)
 {
     /* Optionally we can use passed username */
-    if ($user !== '') {
-        return [$user, 'password'];
+    if (! empty($user)) {
+        return [
+            $user,
+            'password',
+        ];
     }
 
     /* Here we would retrieve the credentials */
-    return ['root', ''];
+    return [
+        'root',
+        '',
+    ];
 }

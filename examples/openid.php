@@ -19,12 +19,17 @@ if (false === @include_once 'OpenID/RelyingParty.php') {
 }
 
 /* Change this to true if using phpMyAdmin over https */
-$secureCookie = false;
+$secure_cookie = false;
 
 /**
  * Map of authenticated users to MySQL user/password pairs.
  */
-$authMap = ['https://launchpad.net/~username' => ['user' => 'root', 'password' => '']];
+$AUTH_MAP = [
+    'https://launchpad.net/~username' => [
+        'user' => 'root',
+        'password' => '',
+    ],
+];
 
 // phpcs:disable PSR1.Files.SideEffects,Squiz.Functions.GlobalFunction
 
@@ -33,7 +38,7 @@ $authMap = ['https://launchpad.net/~username' => ['user' => 'root', 'password' =
  *
  * @param string $contents Content to include in page
  */
-function Show_page(string $contents): void
+function Show_page($contents): void
 {
     header('Content-Type: text/html; charset=utf-8');
 
@@ -62,7 +67,7 @@ function Show_page(string $contents): void
  *
  * @param Exception $e Exception object
  */
-function Die_error(Throwable $e): void
+function Die_error($e): void
 {
     $contents = "<div class='relyingparty_results'>\n";
     $contents .= '<pre>' . htmlspecialchars($e->getMessage()) . "</pre>\n";
@@ -74,10 +79,10 @@ function Die_error(Throwable $e): void
 // phpcs:enable
 
 /* Need to have cookie visible from parent directory */
-session_set_cookie_params(0, '/', '', $secureCookie, true);
+session_set_cookie_params(0, '/', '', $secure_cookie, true);
 /* Create signon session */
-$sessionName = 'SignonSession';
-session_name($sessionName);
+$session_name = 'SignonSession';
+session_name($session_name);
 @session_start();
 
 // Determine realm and return_to
@@ -153,13 +158,13 @@ try {
 
 $id = $message->get('openid.claimed_id');
 
-if (empty($id) || ! isset($authMap[$id])) {
+if (empty($id) || ! isset($AUTH_MAP[$id])) {
     Show_page('<p>User not allowed!</p>');
     exit;
 }
 
-$_SESSION['PMA_single_signon_user'] = $authMap[$id]['user'];
-$_SESSION['PMA_single_signon_password'] = $authMap[$id]['password'];
+$_SESSION['PMA_single_signon_user'] = $AUTH_MAP[$id]['user'];
+$_SESSION['PMA_single_signon_password'] = $AUTH_MAP[$id]['password'];
 $_SESSION['PMA_single_signon_HMAC_secret'] = hash('sha1', uniqid(strval(random_int(0, mt_getrandmax())), true));
 session_write_close();
 /* Redirect to phpMyAdmin (should use absolute URL here!) */
